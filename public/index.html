@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Notenliste Formular</title>
+  </head>
+  <body>
+    <h1>Notenliste eingeben</h1>
+    <form id="notenForm">
+      <div>
+        <label for="name_0">Name:</label>
+        <input id="name_0" name="name_0" type="text" />
+      </div>
+      <div>
+        <label for="fach_0">Fach:</label>
+        <input id="fach_0" name="fach_0" type="text" />
+      </div>
+      <div>
+        <label for="datum_0">Datum:</label>
+        <input id="datum_0" name="datum_0" type="date" />
+      </div>
+      <button type="submit">PDF generieren</button>
+    </form>
+
+    <script>
+      const form = document.getElementById('notenForm');
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Seite nicht neu laden
+
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => (data[key] = value));
+
+        const response = await fetch('/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+          alert('Fehler beim PDF generieren');
+          return;
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        window.open(url);
+      });
+    </script>
+  </body>
+</html>
